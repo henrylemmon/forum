@@ -4,13 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\Foundation\Application;
 
 class ThreadController extends Controller
 {
     /**
+     * ThreadController constructor.
+     */
+    public function __construct()
+    {
+        /*$this->middleware('auth')->only(['store', 'create']);*/
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
+    /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @return Application|Factory|View
      */
     public function index()
     {
@@ -22,29 +37,35 @@ class ThreadController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
     public function create()
     {
-        //
+        return view('threads.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Application|RedirectResponse|Redirector
      */
     public function store(Request $request)
     {
-        //
+        $thread = Thread::create([
+            'user_id' => auth()->id(),
+            'title' => request('title'),
+            'body' => request('body'),
+        ]);
+
+        return redirect($thread->path());
     }
 
     /**
      * Display the specified resource.
      *
      * @param Thread $thread
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     * @return Application|Factory|View
      */
     public function show(Thread $thread)
     {
@@ -55,7 +76,7 @@ class ThreadController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Thread $thread
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit(Thread $thread)
     {
@@ -65,9 +86,9 @@ class ThreadController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param Thread $thread
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, Thread $thread)
     {
@@ -78,7 +99,7 @@ class ThreadController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Thread $thread
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy(Thread $thread)
     {

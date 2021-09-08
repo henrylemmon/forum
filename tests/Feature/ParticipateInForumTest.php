@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
-use App\Models\User;
 use App\Models\Reply;
 use App\Models\Thread;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -14,7 +13,7 @@ class ParticipateInForumTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function unauthenticated_users_may_not_create_replies()
+    public function guests_may_not_create_replies()
     {
         $this->withoutExceptionHandling();
         $this->expectException('Illuminate\Auth\AuthenticationException');
@@ -25,11 +24,11 @@ class ParticipateInForumTest extends TestCase
     /** @test */
     public function an_authenticated_user_may_participate_in_forum_threads()
     {
-        $this->actingAs(User::factory()->create());
+        $this->signIn();
 
-        $thread = Thread::factory()->create();
+        $thread = factory(Thread::class, 'create');
 
-        $reply = Reply::factory()->make();
+        $reply = factory(Reply::class, 'make');
 
         $this->followingRedirects()
             ->post("{$thread->path()}/replies", $reply->toArray())
