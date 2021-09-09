@@ -34,6 +34,7 @@ class CreateThreadsTest extends TestCase
 
         $this->followingRedirects()
             ->post('/threads', $thread)
+            ->assertStatus(200)
             ->assertSee($thread['title'])
             ->assertSee($thread['body']);
 

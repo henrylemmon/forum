@@ -15,10 +15,8 @@ class ParticipateInForumTest extends TestCase
     /** @test */
     public function guests_may_not_create_replies()
     {
-        $this->withoutExceptionHandling();
-        $this->expectException('Illuminate\Auth\AuthenticationException');
-
-        $this->post("/threads/1/replies", []);
+        $this->post("/threads/some-channel/1/replies", [])
+            ->assertRedirect('/login');
     }
 
     /** @test */
@@ -32,6 +30,12 @@ class ParticipateInForumTest extends TestCase
 
         $this->followingRedirects()
             ->post("{$thread->path()}/replies", $reply->toArray())
+            ->assertStatus(200)
             ->assertSee($reply->body);
+
+        $this->get($thread->path())
+            ->assertStatus(200)
+            ->assertSee($thread->title)
+            ->assertSee($thread->body);
     }
 }

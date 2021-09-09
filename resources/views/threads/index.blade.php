@@ -17,7 +17,7 @@
                         @forelse ($threads as $thread)
                             <article>
                                 <h4>
-                                    <a href="/threads/{{ $thread->id }}">
+                                    <a href="{{ $thread->path() }}">
                                         {{ $thread->title }}
                                     </a>
                                 </h4>

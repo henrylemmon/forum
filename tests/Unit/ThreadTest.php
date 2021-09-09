@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Thread;
+use App\Models\Channel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -22,9 +23,17 @@ class ThreadTest extends TestCase
     }
 
     /** @test */
+    public function it_has_an_creator()
+    {
+        $this->assertInstanceOf(User::class, $this->thread->creator);
+    }
+
+    /** @test */
     public function it_has_a_path()
     {
-        $this->assertSame("/threads/{$this->thread->id}", $this->thread->path());
+        $this->assertEquals(
+            "/threads/{$this->thread->channel->slug}/{$this->thread->id}", $this->thread->path()
+        );
     }
 
     /** @test */
@@ -45,8 +54,8 @@ class ThreadTest extends TestCase
     }
 
     /** @test */
-    public function it_has_an_creator()
+    public function it_belongs_to_a_channel()
     {
-        $this->assertInstanceOf(User::class, $this->thread->creator);
+        $this->assertInstanceOf(Channel::class, $this->thread->channel);
     }
 }
