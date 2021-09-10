@@ -8,7 +8,7 @@ use App\Models\Thread;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ParticipateInForumTest extends TestCase
+class ParticipateInThreadsTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -37,5 +37,18 @@ class ParticipateInForumTest extends TestCase
             ->assertStatus(200)
             ->assertSee($thread->title)
             ->assertSee($thread->body);
+    }
+
+    /** @test */
+    public function a_reply_requires_a_body()
+    {
+        $this->signIn();
+
+        $thread = factory(Thread::class, 'create');
+
+        $reply = factory(Reply::class, 'make', ['body' => null]);
+
+        $this->post("{$thread->path()}/replies", $reply->toArray())
+            ->assertSessionHasErrors('body');
     }
 }
