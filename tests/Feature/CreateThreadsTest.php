@@ -33,7 +33,7 @@ class CreateThreadsTest extends TestCase
 
         $thread = factory(Thread::class, 'raw');
 
-        $response = $this->followingRedirects()
+        $this->followingRedirects()
             ->post('/threads', $thread)
             ->assertStatus(200)
             ->assertSee($thread['title'])
