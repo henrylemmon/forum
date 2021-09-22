@@ -28,11 +28,15 @@ class ThreadController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return Application|Factory|View
+     * @return Application|Factory|View|Collection
      */
     public function index(Channel $channel, ThreadFilters $filters)
     {
         $threads = $this->getThreads($filters, $channel);
+
+        if (request()->wantsJson()) {
+            return $threads;
+        }
 
         return view('threads.index', compact('threads'));
     }
@@ -131,6 +135,8 @@ class ThreadController extends Controller
         if ($channel->exists) {
             $threads = $channel->threads()->latest();
         }
+
+        /*dd($threads->toSql());*/
 
         return $threads->get();
     }

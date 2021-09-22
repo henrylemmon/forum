@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\Channel;
-use App\Models\User;
 use Tests\TestCase;
+use App\Models\User;
 use App\Models\Reply;
 use App\Models\Thread;
+use App\Models\Channel;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -56,8 +56,6 @@ class ReadThreadsTest extends TestCase
     /** @test */
     public function a_user_can_filter_threads_according_to_a_tag()
     {
-        /*$this->withoutExceptionHandling();*/
-
         $channel = factory(Channel::class, 'create');
 
         $threadInChannel = factory(Thread::class, 'create', [
@@ -86,5 +84,60 @@ class ReadThreadsTest extends TestCase
         $this->get('/threads?by=john')
             ->assertSee($threadByJohn->title)
             ->assertDontSee($threadNotByJohn->title);
+    }
+
+    /** @test */
+    public function a_user_can_filter_threads_by_popularity()
+    {
+        // three threads
+        // 2 replies, 3 replies, and 0 replies respectively
+        $threadWithTwoReplies = factory(Thread::class, 'create');
+        factory(Reply::class, 'create', [
+            'thread_id' => $threadWithTwoReplies->id,
+        ], 2);
+
+        $threadWithTreeReplies = factory(Thread::class, 'create');
+        factory(Reply::class, 'create', [
+            'thread_id' => $threadWithTreeReplies->id,
+        ], 3);
+
+        $threadWithNoReplies = $this->thread;
+
+        // when filter threads by popularity
+        $response = $this->getJson('/threads?popular=1')->json();
+
+        // they should be returned by most replies to least
+        $this->assertEquals([3, 2, 0], array_column($response, 'replies_count'));
+
+        $this->assertNotEquals([0, 2, 3], array_column($response, 'replies_count'));
+
+        // below used to see if test was testing
+        /*$this->assertEquals([0, 3, 2], array_column($response, 'replies_count'));*/
+    }
+
+    /** @test */
+    public function a_user_can_filter_threads_by_popularity_more_modern_form_without_using_json()
+    {
+        // three threads
+        // 2 replies, 3 replies, and 0 replies respectively
+        $threadWithTwoReplies = factory(Thread::class, 'create');
+        factory(Reply::class, 'create', [
+            'thread_id' => $threadWithTwoReplies->id,
+        ], 2);
+
+        $threadWithThreeReplies = factory(Thread::class, 'create');
+        factory(Reply::class, 'create', [
+            'thread_id' => $threadWithThreeReplies->id,
+        ], 3);
+
+        $threadWithNoReplies = $this->thread;
+
+        // when filter threads by popularity
+        $this->get('/threads?popular=1')
+            ->assertSeeInOrder([
+                $threadWithThreeReplies->title,
+                $threadWithTwoReplies->title,
+                $threadWithNoReplies->title,
+            ]);
     }
 }

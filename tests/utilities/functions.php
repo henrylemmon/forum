@@ -1,6 +1,6 @@
 <?php
 
-function factory($class, $method, $attributes = [])
+function factory($class, $method, $attributes = [], $times = null)
 {
-    return $class::factory()->$method($attributes);
+    return $class::factory($times)->$method($attributes);
 }
