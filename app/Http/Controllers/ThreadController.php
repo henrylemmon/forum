@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Thread;
 use App\Models\Channel;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Filters\ThreadFilters;
@@ -12,6 +11,7 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Foundation\Application;
 
 class ThreadController extends Controller
