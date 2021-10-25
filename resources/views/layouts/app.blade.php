@@ -72,7 +72,7 @@
                                 Channels
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                @foreach (\App\Models\Channel::all() as $channel)
+                                @foreach ($channels as $channel)
                                     <a class="dropdown-item" href="/threads/{{ $channel->slug }}">{{ ucwords($channel->name) }}</a>
                                 @endforeach
                             </div>

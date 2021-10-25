@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Cache;
 use View;
 use App\Models\Channel;
 use Illuminate\Pagination\Paginator;
@@ -29,7 +30,11 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
 
         View::composer('*', function ($view) {
-            $view->with('channels', Channel::all());
+            $channels = Cache::rememberForever('channels', function () {
+                return Channel::all();
+            });
+            /*$view->with('channels', Channel::all());*/
+            $view->with('channels', $channels);
         });
     }
 }
